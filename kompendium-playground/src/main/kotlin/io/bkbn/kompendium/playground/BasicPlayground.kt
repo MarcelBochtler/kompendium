@@ -22,6 +22,7 @@ import io.bkbn.kompendium.playground.BasicModels.BasicRequest
 import io.bkbn.kompendium.playground.BasicModels.BasicResponse
 import io.bkbn.kompendium.playground.BasicPlaygroundToC.simpleDeleteRequest
 import io.bkbn.kompendium.playground.BasicPlaygroundToC.simpleGetExample
+import io.bkbn.kompendium.playground.BasicPlaygroundToC.simpleGetExampleWithJsonElement
 import io.bkbn.kompendium.playground.BasicPlaygroundToC.simpleGetExampleWithParameters
 import io.bkbn.kompendium.playground.BasicPlaygroundToC.simplePostRequest
 import io.bkbn.kompendium.playground.util.Util
@@ -41,6 +42,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.util.UUID
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Application entrypoint.  Run this and head on over to `localhost:8081/docs`
@@ -99,6 +103,11 @@ private fun Application.mainModule() {
         }
       }
     }
+    route("/jsonelement") {
+      notarizedGet(simpleGetExampleWithJsonElement) {
+        call.respond(HttpStatusCode.OK, JsonObject(mapOf("a" to JsonPrimitive("b"))))
+      }
+    }
   }
 }
 
@@ -118,6 +127,19 @@ object BasicPlaygroundToC {
       examples = mapOf("demo" to BasicResponse(c = "52c099d7-8642-46cc-b34e-22f39b923cf4"))
     ),
     tags = setOf("Simple")
+  )
+
+  val simpleGetExampleWithJsonElement = GetInfo<Unit, JsonElement>(
+    summary = "Documented GET Request",
+    description = "Responds with a JsonElement",
+    responseInfo = ResponseInfo(
+      status = HttpStatusCode.OK,
+      description = "Everything ok",
+      examples = mapOf("demo" to JsonObject(mapOf("a" to JsonPrimitive("b"))))
+    ),
+    tags = setOf(
+      "Simple"
+    )
   )
 
   /**
